@@ -32,8 +32,7 @@ public class KijiSink extends AbstractSink implements Configurable {
   @Override
   public void configure(Context context) {
     // TODO: Add error message.
-    //final String uriString = Preconditions.checkNotNull(context.getString("kiji.flume.tableuri"));
-    final String uriString = "kiji://.env/default/flume_test/";
+    final String uriString = Preconditions.checkNotNull(context.getString("tableuri"));
     mUri = KijiURI.newBuilder(uriString).build();
   }
 
