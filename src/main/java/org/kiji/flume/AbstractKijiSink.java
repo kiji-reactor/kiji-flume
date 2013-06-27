@@ -9,10 +9,10 @@ import org.apache.flume.sink.AbstractSink;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.kiji.schema.AtomicKijiPutter;
 import org.kiji.schema.Kiji;
 import org.kiji.schema.KijiIOException;
 import org.kiji.schema.KijiTable;
-import org.kiji.schema.KijiTableWriter;
 import org.kiji.schema.KijiURI;
 
 /**
@@ -23,7 +23,7 @@ public abstract class AbstractKijiSink
   private static final Logger LOG = LoggerFactory.getLogger(AbstractKijiSink.class);
   private KijiURI mUri;
   private KijiTable mTable;
-  private KijiTableWriter mWriter;
+  private AtomicKijiPutter mWriter;
 
   protected KijiURI getUri() {
     return mUri;
@@ -33,14 +33,14 @@ public abstract class AbstractKijiSink
     return mTable;
   }
 
-  protected KijiTableWriter getWriter() {
+  protected AtomicKijiPutter getWriter() {
     return mWriter;
   }
 
   @Override
   public void configure(Context context) {
-    // TODO: Add error message.
-    final String uriString = Preconditions.checkNotNull(context.getString("tableuri"));
+    final String uriString = Preconditions.checkNotNull(context.getString("tableuri"),
+        "Must specify a target table URI in configuration.");
     mUri = KijiURI.newBuilder(uriString).build();
   }
 
@@ -50,7 +50,7 @@ public abstract class AbstractKijiSink
       final Kiji kiji = Kiji.Factory.open(mUri);
       try {
         mTable = kiji.openTable(mUri.getTable());
-        mWriter = mTable.openTableWriter();
+        mWriter = mTable.getWriterFactory().openAtomicPutter();
       } finally {
         kiji.release();
       }

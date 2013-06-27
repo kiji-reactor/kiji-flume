@@ -5,6 +5,6 @@ WITH LOCALITY GROUP default WITH DESCRIPTION 'Main storage.' (
   TTL = FOREVER,
   COMPRESSED WITH GZIP,
   FAMILY info WITH DESCRIPTION 'Basic information' (
-    name "string" WITH DESCRIPTION 'This is actually any string.'
+    tweet "string" WITH DESCRIPTION 'Contents of a Tweet.'
   )
 );

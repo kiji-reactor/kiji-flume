@@ -1,7 +1,5 @@
 package org.kiji.flume;
 
-import java.io.IOException;
-
 import com.google.common.base.Preconditions;
 import org.apache.flume.Channel;
 import org.apache.flume.Event;
@@ -11,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.kiji.schema.EntityId;
-import org.kiji.schema.KijiIOException;
 
 /**
  */
@@ -37,19 +34,20 @@ public class TokenKijiSink
       Preconditions.checkState(tokens.length > 1);
       final EntityId entityId = getTable().getEntityId(tokens[0]);
 
+      getWriter().begin(entityId);
       // Write the unpacked data to Kiji.
-      getWriter().put(entityId, "info", "name", message);
+      getWriter().put("info", "name", message);
 
       transaction.commit();
+      getWriter().commit();
       return Status.READY;
     } catch (Throwable t) {
       transaction.rollback();
-
+      getWriter().rollback();
       // re-throw all Errors
       if (t instanceof Error) {
         throw (Error)t;
       }
-
       return Status.BACKOFF;
     } finally {
       transaction.close();
