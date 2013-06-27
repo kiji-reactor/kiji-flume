@@ -47,14 +47,12 @@ public class TwitterKijiSink extends AbstractKijiSink {
 
         getWriter().begin(eid);
         getWriter().put("info", "tweet", timestamp, node.get("text").getValueAsText());
-
+        getWriter().commit();
       }
-      getWriter().commit();
       transaction.commit();
       return Status.READY;
     } catch (Throwable t) {
       transaction.rollback();
-      getWriter().rollback();
       if (t instanceof Error) {
         throw (Error) t;
       }
