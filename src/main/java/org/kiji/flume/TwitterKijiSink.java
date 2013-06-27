@@ -1,9 +1,12 @@
 package org.kiji.flume;
 
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Map;
 
+import com.google.common.base.Preconditions;
 import org.apache.flume.Channel;
+import org.apache.flume.Context;
 import org.apache.flume.Event;
 import org.apache.flume.EventDeliveryException;
 import org.apache.flume.Transaction;
@@ -14,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.kiji.schema.EntityId;
+import org.kiji.schema.KijiColumnName;
 
 /**
  */
@@ -43,13 +47,20 @@ public class TwitterKijiSink extends AbstractKijiSink {
         final long timestamp  = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy").parse(
             node.get("created_at").getValueAsText()).getTime();
 
+        final List<KijiColumnName> columnNames = getUri().getColumns();
+        Preconditions.checkState(columnNames.size() == 1);
+        Preconditions.checkState(columnNames.get(0).isFullyQualified());
+        final String family = columnNames.get(0).getFamily();
+        final String qualifier = columnNames.get(0).getQualifier();
+
         getWriter().begin(eid);
-        getWriter().put("info", "tweet", timestamp, node.get("text").getValueAsText());
+        getWriter().put(family, qualifier, timestamp, node.get("text").getValueAsText());
         getWriter().commit();
       }
       transaction.commit();
       return Status.READY;
     } catch (Throwable t) {
+      LOG.error(t.toString());
       transaction.rollback();
       if (t instanceof Error) {
         throw (Error) t;
