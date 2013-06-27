@@ -46,6 +46,11 @@ public class TwitterClient {
     final String accessToken = System.getProperty(TOKEN_PROPERTY);
     final String accessTokenSecret = System.getProperty(TOKEN_SECRET);
 
+    LOG.info("API Key: {}", apiKey);
+    LOG.info("API Secret: {}", apiSecret);
+    LOG.info("Access Token: {}", accessToken);
+    LOG.info("Access Token Secret: {}", accessTokenSecret);
+
     final OAuthService service = new ServiceBuilder()
         .provider(TwitterApi.class)
         .apiKey(apiKey)
