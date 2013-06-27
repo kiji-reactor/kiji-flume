@@ -16,8 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.kiji.schema.EntityId;
 
 /**
- * Created with IntelliJ IDEA. User: aaron Date: 6/26/13 Time: 5:09 PM To change this template use
- * File | Settings | File Templates.
  */
 public class TwitterKijiSink extends AbstractKijiSink {
   private static final Logger LOG = LoggerFactory.getLogger(TwitterKijiSink.class);

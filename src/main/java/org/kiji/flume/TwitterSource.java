@@ -25,8 +25,6 @@ import org.slf4j.LoggerFactory;
 
 import org.kiji.schema.KijiIOException;
 
-/**
- */
 public class TwitterSource extends AbstractSource implements Configurable, PollableSource {
   private static final Logger LOG = LoggerFactory.getLogger(TwitterSource.class);
   public static final String API_KEY_PROPERTY = "apikey";
