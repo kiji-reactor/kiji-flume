@@ -1,0 +1,12 @@
+{
+  name : "tweets",
+  families : [ {
+    name : "tweet",
+    columns : [ {
+      name : "text",
+      source : "text"
+    } ]
+  } ],
+  entityIdSource : "user.name",
+  version : "import-1.0"
+}

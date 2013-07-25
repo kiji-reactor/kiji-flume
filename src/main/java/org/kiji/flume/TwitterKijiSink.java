@@ -1,3 +1,22 @@
+/**
+ * (c) Copyright 2013 WibiData, Inc.
+ *
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.kiji.flume;
 
 import java.text.SimpleDateFormat;
@@ -6,7 +25,6 @@ import java.util.Map;
 
 import com.google.common.base.Preconditions;
 import org.apache.flume.Channel;
-import org.apache.flume.Context;
 import org.apache.flume.Event;
 import org.apache.flume.EventDeliveryException;
 import org.apache.flume.Transaction;
@@ -19,10 +37,10 @@ import org.slf4j.LoggerFactory;
 import org.kiji.schema.EntityId;
 import org.kiji.schema.KijiColumnName;
 
-/**
- */
 public class TwitterKijiSink extends AbstractKijiSink {
   private static final Logger LOG = LoggerFactory.getLogger(TwitterKijiSink.class);
+  private static final SimpleDateFormat DATE_PARSER =
+      new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy");
 
   @Override
   public Status process() throws EventDeliveryException {
@@ -43,9 +61,10 @@ public class TwitterKijiSink extends AbstractKijiSink {
       if (isTweet(map)) {
         final JsonNode node = oMapper.readTree(message);
         final JsonNode user = node.get("user");
-        final EntityId eid = getTable().getEntityId(user.get("name").getValueAsText());
-        final long timestamp  = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy").parse(
-            node.get("created_at").getValueAsText()).getTime();
+        final EntityId eid = getTable().getEntityId(user.get("name").asText());
+        final long timestamp  = DATE_PARSER
+            .parse(node.get("created_at").asText())
+            .getTime();
 
         final List<KijiColumnName> columnNames = getUri().getColumns();
         Preconditions.checkState(columnNames.size() == 1);
